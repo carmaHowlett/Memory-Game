@@ -1,6 +1,6 @@
 # Memory Game Project
 
-# How to Run the Application:
+## How to Run the Application:
 
 1. To run run the application locally, simply open the file named "index.html" in your web browser.
 
