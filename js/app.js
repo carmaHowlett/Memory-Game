@@ -16,6 +16,7 @@ let symbols = ['bicycle', 'bicycle', 'leaf', 'leaf', 'cube', 'cube', 'anchor', '
     rank3stars = 10,
     rank2stars = 16,
     rank1stars = 20;
+    started = false;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -40,6 +41,7 @@ function initGame() {
     $deck.empty();
     match = 0;
     moves = 0;
+    started = false;
     $moveNum.text('0');
     $ratingStars.removeClass('fa-star-o').addClass('fa-star');
     for (var i = 0; i < cards.length; i++) {
@@ -50,7 +52,7 @@ function initGame() {
     resetTimer(currentTimer);
     second = 0;
     $timer.text(`${second}`)
-    initTime();
+    // initTime();
 };
 
 // Set Rating and the Final score
@@ -62,9 +64,6 @@ function setRating(moves) {
     } else if (moves > rank2stars && moves < rank1stars) {
         $ratingStars.eq(1).removeClass('fa-star').addClass('fa-star-o');
         rating = 1;
-    } else if (moves > rank1stars) {
-        $ratingStars.eq(0).removeClass('fa-star').addClass('fa-star-o');
-        rating = 0;
     }
     return {
         score: rating
@@ -107,11 +106,16 @@ $restart.on('click', function() {
     });
 });
 
-var addCardListener = function() {
+let addCardListener = function() {
 
     // Card Flipping
     $deck.find('.card').bind('click', function() {
-        var $this = $(this)
+        var $this = $(this);
+
+        if (!started) {
+          started = true;
+          initTime();
+        }
 
         if ($this.hasClass('show') || $this.hasClass('match')) {
             return true;
@@ -157,8 +161,8 @@ var addCardListener = function() {
 
 function initTime() {
     currentTimer = setInterval(function() {
-        $timer.text(`${second}`)
-        second = second + 1
+        $timer.text(`${second}`);
+        second = second + 1;
     }, 1000);
 }
 
