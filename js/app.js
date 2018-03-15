@@ -5,7 +5,7 @@ let symbols = ['bicycle', 'bicycle', 'leaf', 'leaf', 'cube', 'cube', 'anchor', '
     moves = 0,
     $deck = $('.deck'),
     $scorePanel = $('#score-panel'),
-    $moveNum = $('.moves'),
+    $moveNum = $scorePanel.find('.moves'),
     $ratingStars = $('.fa-star'),
     $restart = $('.restart'),
     delay = 400,
@@ -13,9 +13,9 @@ let symbols = ['bicycle', 'bicycle', 'leaf', 'leaf', 'cube', 'cube', 'anchor', '
     second = 0,
     $timer = $('.timer'),
     totalCard = symbols.length / 2,
-    rank3stars = 10,
-    rank2stars = 16,
-    rank1stars = 20;
+    rank3stars = 25,
+    rank2stars = 27,
+    rank1stars = 29;
     started = false;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -39,39 +39,45 @@ function shuffle(array) {
 function initGame() {
     var cards = shuffle(symbols);
     $deck.empty();
+    opened = [];
     match = 0;
     moves = 0;
     started = false;
     $moveNum.text('0');
     $ratingStars.removeClass('fa-star-o').addClass('fa-star');
     for (var i = 0; i < cards.length; i++) {
-        $deck.append($('<li class="card"><i class="fa fa-' + cards[i] + '"></i></li>'))
+        $deck.append($('<li class="card"><i class="fa fa-' + cards[i] + '"></i></li>'));
     }
     addCardListener();
 
     resetTimer(currentTimer);
     second = 0;
-    $timer.text(`${second}`)
+    $timer.text(`${second}`);
     // initTime();
-};
+}
 
 // Set Rating and the Final score
 function setRating(moves) {
     var rating = 3;
-    if (moves > rank3stars && moves < rank2stars) {
+    if (moves <= rank3stars) {
+        rating = 3;
+        return { score: rating };
+    }
+    if (moves > rank3stars && moves <= rank2stars) {
         $ratingStars.eq(2).removeClass('fa-star').addClass('fa-star-o');
         rating = 2;
-    } else if (moves > rank2stars && moves < rank1stars) {
+        return { score: rating };
+    } else if (moves > rank2stars) {
         $ratingStars.eq(1).removeClass('fa-star').addClass('fa-star-o');
         rating = 1;
+        return { score: rating };
     }
-    return {
-        score: rating
-    };
-};
+
+}
 
 // End the GAME
 function endGame(moves, score) {
+  stopTimer(currentTimer);
     swal({
         allowEscapeKey: false,
         allowOutsideClick: false,
@@ -110,6 +116,7 @@ let addCardListener = function() {
 
     // Card Flipping
     $deck.find('.card').bind('click', function() {
+      if($('.show').length > 1) { return true; }
         var $this = $(this);
 
         if (!started) {
@@ -164,6 +171,14 @@ function initTime() {
         $timer.text(`${second}`);
         second = second + 1;
     }, 1000);
+}
+
+function stopTimer(timer) {
+  if (timer) {
+    var time = $timer.text();
+    clearInterval(timer);
+    $timer.text(time);
+  }
 }
 
 function resetTimer(timer) {
